@@ -102,7 +102,7 @@
 <meta property="og:site_name" content="JamChiu&#39;s Blog">
 <meta property="og:description" content="作为一个Java Coder，在开发过程中或多或少会用到反射，如动态创建指定泛型对象等，看着高大上，但是反射效率上着实有些感人，下面，将通过创建对象篇和方法执行篇来看看，在使用反射的时候，我们能怎么去优化它。 反射慢之初体验 我们先新建一个普通的类 123456789101112131415161718192021222324252627282930313233343536373839404142">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-11-04T10:09:11.119Z">
+<meta property="og:updated_time" content="2019-11-06T05:57:17.301Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="反射优化-创建对象篇">
 <meta name="twitter:description" content="作为一个Java Coder，在开发过程中或多或少会用到反射，如动态创建指定泛型对象等，看着高大上，但是反射效率上着实有些感人，下面，将通过创建对象篇和方法执行篇来看看，在使用反射的时候，我们能怎么去优化它。 反射慢之初体验 我们先新建一个普通的类 123456789101112131415161718192021222324252627282930313233343536373839404142">
@@ -329,13 +329,23 @@
                 
               
 
-              <time title="Created: 2019-11-04 15:28:28 / Modified: 18:09:11" itemprop="dateCreated datePublished" datetime="2019-11-04T15:28:28+08:00">2019-11-04</time>
+              <time title="Created: 2019-11-04 15:28:28" itemprop="dateCreated datePublished" datetime="2019-11-04T15:28:28+08:00">2019-11-04</time>
             </span>
           
 
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-11-06 13:57:17" itemprop="dateModified" datetime="2019-11-06T13:57:17+08:00">2019-11-06</time>
+              </span>
             
           
 
@@ -379,13 +389,13 @@
 <li><p>使用普通的new的方式和反射的方式创建对象</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 通过正常new的方式创建对象</span></span><br><span class="line"><span class="comment"> * 平均耗时：5ms</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createInNormal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">new</span> TestUser();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 通过反射的方式创建对象</span></span><br><span class="line"><span class="comment"> * 平均耗时：800ms</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createByReflect</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">        Class.forName(<span class="string">"tech.zhaojian.domain.TestUser"</span>).newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>上面是调用无参构造函数的时候的效率对比，明显慢了很多，可想而知反射效率是比较感人的，那我们再试试有参构造会慢多少</p>
+<p>上面是调用无参构造函数的时候的效率对比，明显慢了很多，可想而知反射效率是比较感人的，那我们再试试有参构造会慢多少。</p>
 </li>
 <li><p>使用普通的new的方式和反射的方式调用有参构造</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 通过正常new的方式创建对象</span></span><br><span class="line"><span class="comment"> * 平均耗时：50ms</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createArgsInNormal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">new</span> TestUser(i,<span class="string">"hello"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">   </span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 通过反射的方式创建对象</span></span><br><span class="line"><span class="comment"> * 平均耗时：1300ms</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createArgsByReflect</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">1000000</span>; i++) &#123;</span><br><span class="line">        Class&lt;?&gt; testUserClazz = Class.forName(<span class="string">"tech.zhaojian.domain.TestUser"</span>);</span><br><span class="line">        Constructor&lt;?&gt; constructor = testUserClazz.getDeclaredConstructor(<span class="keyword">new</span> Class[]&#123;<span class="keyword">long</span>.class,String.class&#125;);</span><br><span class="line">        constructor.newInstance(i, <span class="string">"hello"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>还是慢了很多，但是整体效果上，但是差距没有无参构造那么明显。</p>
-<p>通过上面的试验，我们得出了如下图标</p>
+<p>通过上面的试验，我们得出了如下图表：</p>
 <table>
 <thead>
 <tr>
@@ -424,7 +434,7 @@
 <p>高性能反射工具包ReflectASM，是通过字节码生成的方式来实现的反射机制，这样的反射能更进一步提升Java反射的性能。</p>
 </li>
 </ol>
-<p>源码可到<a href="https://github.com/jamchiu/reflect-optimize下载" target="_blank" rel="noopener">https://github.com/jamchiu/reflect-optimize下载</a></p>
+<p>源码可到 <a href="https://github.com/jamchiu/reflect-optimize" target="_blank" rel="noopener">https://github.com/jamchiu/reflect-optimize</a> 下载</p>
 <blockquote>
 <p>参考： </p>
 <p><a href="https://blog.csdn.net/loveqishan/article/details/89531587" target="_blank" rel="noopener">如何提高使用Java反射的效率？</a></p>
@@ -478,6 +488,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/11/06/反射优化-方法执行篇/" rel="prev" title="反射优化-方法执行篇">
+                反射优化-方法执行篇 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -546,7 +560,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">posts</span>
                   </a>
                 </div>
